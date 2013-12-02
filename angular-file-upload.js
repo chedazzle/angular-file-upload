@@ -409,7 +409,21 @@ app.factory('$fileUploader', [ '$compile', '$rootScope', '$http', '$window', fun
                 xhr.setRequestHeader(name, value);
             });
 
-            xhr.send(form);
+            /*
+             * xhr: send arraybuffer for simple file upload
+             * https://developers.google.com/storage/docs/json_api/v1/how-tos/upload
+            */
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              var arrayBuffer = reader.result;
+              // could also send blob
+              // var blob = new Blob(['{ "text": "test" }'], { 'type': 'text/plain' });
+              xhr.setRequestHeader('Content-Type', item.file.type);
+              xhr.send(arrayBuffer);
+            }
+            reader.readAsArrayBuffer(item.file);
+
+            // xhr.send(form);
         },
 
         /**
